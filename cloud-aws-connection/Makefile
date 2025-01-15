@@ -2,6 +2,11 @@ PWD=$(shell pwd -L)
 AWS_CMD=aws
 TZ=UTC
 
+ifneq (,$(wildcard .env))
+    include .env
+    export
+endif
+
 .PHONY: all test vendor
 
 all: help

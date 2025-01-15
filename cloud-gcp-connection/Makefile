@@ -2,6 +2,11 @@ PWD=$(shell pwd -L)
 GCP_CMD=gcloud
 TZ=UTC
 
+ifneq (,$(wildcard .env))
+    include .env
+    export
+endif
+
 .PHONY: all test vendor
 
 all: help
