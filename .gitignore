@@ -3,8 +3,12 @@
 *.swo
 
 # Visual Studio Code
-.vscode/
-.factorypath
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
 
 # OSX
 .DS_Store
