@@ -22,8 +22,8 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-session-name: playground-github
-          role-to-assume: arn:aws:iam::${env.AWS_ACCOUNT}:role/github-actions-role
-          aws-region: ${env.AWS_REGION}
+          role-to-assume: arn:aws:iam::${{env.AWS_ACCOUNT}}:role/github-actions-role
+          aws-region: ${{env.AWS_REGION}}
       - id: info
         name: Get information from AWS credentials
         run: |
