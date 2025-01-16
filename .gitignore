@@ -16,3 +16,6 @@
 # Patch
 *.orig
 *.rej
+
+# Project specifics
+cloud-aws-connection/policies/*
