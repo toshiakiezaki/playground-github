@@ -1,0 +1,30 @@
+name: Connect GitHub Actions to AWS using AssumeRole
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  aws:
+    runs-on: ubuntu-latest
+    steps:
+      - id: clone
+        name: Checkout project
+        uses: actions/checkout@v4
+      - id: authenticate
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-session-name: playground-github
+          role-to-assume: arn:aws:iam::${env.AWS_ACCOUNT}:role/github-actions-role
+          aws-region: ${env.AWS_REGION}
+      - id: info
+        name: Get information from AWS credentials
+        run: |
+          aws sts get-caller-identity
