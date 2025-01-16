@@ -1,4 +1,4 @@
-name: Connect GitHub Actions to AWS using AssumeRole
+name: Connect GitHub Actions to AWS
 
 on:
   workflow_dispatch:
