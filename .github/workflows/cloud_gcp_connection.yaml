@@ -1,0 +1,27 @@
+name: Connect GitHub Actions to GCP
+
+on:
+  workflow_dispatch:
+
+env:
+  GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  gcp:
+    runs-on: ubuntu-latest
+    steps:
+      - id: clone
+        name: Checkout project
+        uses: actions/checkout@v4
+      - id: authenticate
+        name: Configure GCP credentials
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: ${{ env.GCP_CREDENTIALS }}
+      - id: info
+        name: Get information from GCP credentials
+        run: |
+          gcloud info
