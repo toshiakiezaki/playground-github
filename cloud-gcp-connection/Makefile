@@ -10,17 +10,29 @@ endif
 
 .PHONY: all test vendor
 
-# gcloud iam workload-identity-pools create github-actions-pool --location="global" --project $(GCP_PROJECT_ID)
+all: help
 
-# gcloud iam workload-identity-pools providers create-oidc github-actions-pool-oidc-provider \
-#   --location="global" --workload-identity-pool="github-actions-pool"  \
-#   --issuer-uri="https://token.actions.githubusercontent.com" \
-#   --attribute-mapping="attribute.actor=assertion.actor,google.subject=assertion.sub,attribute.repository=assertion.repository" \
-#   --project $(GCP_PROJECT_ID)
+create-identity-pool:                          ## Create workload identity pool
+	@echo "Creating workload identity pool in Google Cloud Platform..."
+	@gcloud iam workload-identity-pools create github-actions-pool --location="global"
+		--display-name="GitHub Actions Pool" --description="Workload identity pool for GitHub Actions"
+		--project $(GCP_PROJECT_ID)
 
-# gcloud iam service-accounts create github-actions \
-#   --display-name="Service account used by WIF POC" \
-#   --project $(GCP_PROJECT_ID)
+create-identity-pool-provider:                 ## Create workload identity pool provider with OIDC
+	@echo "Creating workload identity pool provider with OIDC in Google Cloud Platform..."
+	@gcloud iam workload-identity-pools providers create-oidc github-actions-oidc-provider \
+		--location="global" --workload-identity-pool="github-actions-pool"  \
+		--issuer-uri="https://token.actions.githubusercontent.com" \
+		--attribute-mapping="attribute.actor=assertion.actor,google.subject=assertion.sub,attribute.repository=assertion.repository" \
+		--attribute-condition="assertion.repository_owner=='toshiakiezaki'" \
+		--display-name "GitHub Actions OIDC Provider"
+		--project $(GCP_PROJECT_ID)
+
+create-service-account:                        ## Create service account
+	@echo "Creating service account in Google Cloud Platform..."
+	@gcloud iam service-accounts create github-actions \
+		--display-name="Service account used by all workflows in GitHub Actions" \
+		--project $(GCP_PROJECT_ID)
 
 # gcloud projects add-iam-policy-binding $(GCP_PROJECT_ID) \
 #   --member='serviceAccount:github-actions@$(GCP_PROJECT_ID).iam.gserviceaccount.com' \
@@ -30,8 +42,6 @@ endif
 #   --project=$(GCP_PROJECT_ID) \
 #   --role="roles/iam.workloadIdentityUser" \
 #   --member="principalSet://iam.googleapis.com/projects/$(GCP_PROJECT_NUMBER)/locations/global/workloadIdentityPools/github-actions-pool/attribute.repository/toshiakiezaki/*"
-
-all: help
 
 help:                                          ## Display help screen
 	@echo "Usage:"
