@@ -14,8 +14,9 @@ all: help
 
 create-identity-pool:                          ## Create workload identity pool
 	@echo "Creating workload identity pool in Google Cloud Platform..."
-	@gcloud iam workload-identity-pools create github-actions-pool --location="global"
-		--display-name="GitHub Actions Pool" --description="Workload identity pool for GitHub Actions"
+	@gcloud iam workload-identity-pools create github-actions-pool --location="global" \
+		--display-name="GitHub Actions Pool" \
+		--description="Workload identity pool for GitHub Actions" \
 		--project $(GCP_PROJECT_ID)
 
 create-identity-pool-provider:                 ## Create workload identity pool provider with OIDC
@@ -31,7 +32,8 @@ create-identity-pool-provider:                 ## Create workload identity pool 
 create-service-account:                        ## Create service account
 	@echo "Creating service account in Google Cloud Platform..."
 	@gcloud iam service-accounts create github-actions \
-		--display-name="Service account used by all workflows in GitHub Actions" \
+		--display-name="GitHub Actions" \
+		--description="Service account used by all workflows in GitHub Actions" \
 		--project $(GCP_PROJECT_ID)
 
 # gcloud projects add-iam-policy-binding $(GCP_PROJECT_ID) \
