@@ -24,10 +24,6 @@ jobs:
           create_credentials_file: true
           workload_identity_provider: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-oidc-provider
           service_account: github-actions
-      - id: login
-        name: Login using GCP credentials
-        run: |
-          gcloud auth login --brief --cred-file="${{ steps.authenticate.outputs.credentials_file_path }}"
       - id: info
         name: Get information from GCP credentials
         run: |
