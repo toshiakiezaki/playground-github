@@ -24,7 +24,7 @@ create-identity-pool-provider:                 ## Create workload identity pool 
 	@gcloud iam workload-identity-pools providers create-oidc github-actions-oidc-provider \
 		--location="global" --workload-identity-pool="github-actions-pool"  \
 		--issuer-uri="https://token.actions.githubusercontent.com" \
-		--attribute-mapping="attribute.actor=assertion.actor,google.subject=assertion.sub,attribute.repository=assertion.repository" \
+		--attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository,attribute.repository_owner=assertion.repository_owner" \
 		--attribute-condition="assertion.repository_owner=='toshiakiezaki'" \
 		--display-name "GitHub Actions OIDC Provider"
 		--project $(GCP_PROJECT_ID)
@@ -36,14 +36,11 @@ create-service-account:                        ## Create service account
 		--description="Service account used by all workflows in GitHub Actions" \
 		--project $(GCP_PROJECT_ID)
 
-# gcloud projects add-iam-policy-binding $(GCP_PROJECT_ID) \
-#   --member='serviceAccount:github-actions@$(GCP_PROJECT_ID).iam.gserviceaccount.com' \
-#   --role="roles/compute.viewer"
-
-# gcloud iam service-accounts add-iam-policy-binding github-actions@$(GCP_PROJECT_ID).iam.gserviceaccount.com \
-#   --project=$(GCP_PROJECT_ID) \
-#   --role="roles/iam.workloadIdentityUser" \
-#   --member="principalSet://iam.googleapis.com/projects/$(GCP_PROJECT_NUMBER)/locations/global/workloadIdentityPools/github-actions-pool/attribute.repository/toshiakiezaki/*"
+create-service-account-policies:
+	@gcloud iam service-accounts add-iam-policy-binding "github-actions@$(GCP_PROJECT_ID).iam.gserviceaccount.com" \
+		--project="$(GCP_PROJECT_ID)" \
+		--role="roles/iam.workloadIdentityUser" \
+		--member="principalSet://iam.googleapis.com/projects/$(GCP_PROJECT_NUMBER)/locations/global/workloadIdentityPools/github-actions-pool/attribute.repository_owner/toshiakiezaki"
 
 help:                                          ## Display help screen
 	@echo "Usage:"
