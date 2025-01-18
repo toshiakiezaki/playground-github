@@ -10,6 +10,13 @@
 !.vscode/extensions.json
 .history/*
 
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.backup
+*.lock.hcl
+*.tfvars
+
 # OSX
 .DS_Store
 
