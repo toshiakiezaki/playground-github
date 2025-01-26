@@ -1,5 +1,7 @@
 PWD=$(shell pwd -L)
 AWS_ACCOUNT=$(shell aws sts get-caller-identity --query Account --output text)
+TF_TABLE="terraform-workload-lock"
+TF_BUCKET="terraform-workload-data"
 TZ=UTC
 
 ifneq (,$(wildcard .env))
@@ -14,10 +16,13 @@ create-policies-for-role:   					## Create processed policies for role
 	@rm -rf policies
 	@mkdir -p policies
 	@for policy in $(shell ls templates); do \
-		sed	"s/\$${account_id}/$(AWS_ACCOUNT)/g" templates/$${policy} > policies/$${policy}; \
+		cat templates/$${policy} | \
+			sed "s/\$${account_id}/$(AWS_ACCOUNT)/g" | \
+			sed "s/\$${bucket_id}/$(TF_BUCKET)/g" | \
+			sed "s/\$${table_id}/$(TF_TABLE)/g" > policies/$${policy}; \
 	done
 
-help:                                          ## Display help screen
+help:                                           ## Display help screen
 	@echo "Usage:"
 	@echo "	 make [COMMAND]"
 	@echo "	 make help \n"
