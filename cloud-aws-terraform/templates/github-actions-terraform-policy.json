@@ -3,7 +3,7 @@
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "terraform-state-protection",
+            "Sid": "TerraformStateProtection",
             "Effect": "Deny",
             "Action": [
                 "s3:CreateBucket",
@@ -11,11 +11,11 @@
                 "s3:DeleteBucketPolicy"
             ],
             "Resource": [
-                "arn:aws:s3:${region_id}:${account_id}:${bucket_id}"
+                "arn:aws:s3:::${bucket_id}"
             ]
         },
         {
-            "Sid": "terraform-lock-protection",
+            "Sid": "TerraformTableProtection",
             "Effect": "Deny",
             "Action": [
                 "dynamodb:DeleteTable"
@@ -25,7 +25,7 @@
             ]
         },
         {
-            "Sid": "terraform-allowed-actions",
+            "Sid": "TerraformAllowedActions",
             "Effect": "Allow",
             "Action": [
                 "lambda:*",
@@ -59,7 +59,7 @@
             ]
         },
         {
-            "Sid": "terraform-denied-actions",
+            "Sid": "TerraformDeniedActions",
             "Effect": "Deny",
             "Action": [
                 "iam:*User*",
