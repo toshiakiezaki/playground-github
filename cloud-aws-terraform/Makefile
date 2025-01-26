@@ -24,6 +24,10 @@ create-policies-for-role:                       ## Create processed policies for
 			sed "s/\$${table_id}/$(TF_TABLE)/g" > policies/$${policy}; \
 	done
 
+create-terraform-policy:                        ## Create terraform policy
+	@echo "Creating terraform policy for GitHub Actions role in Amazon Web Services..."
+	@aws iam create-policy --policy-name github-actions-terraform-policy --policy-document file://policies/github-actions-terraform-policy.json
+
 create-terraform-bucket:                        ## Create terraform workload bucket
 	@echo "Creating terraform bucket to store workload data in Amazon Web Services..."
 	@aws s3api create-bucket --region $(AWS_REGION) --bucket $(TF_BUCKET) --no-object-lock-enabled-for-bucket
