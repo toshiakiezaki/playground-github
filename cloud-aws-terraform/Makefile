@@ -1,5 +1,6 @@
 PWD=$(shell pwd -L)
 AWS_ACCOUNT=$(shell aws sts get-caller-identity --query Account --output text)
+AWS_REGION="us-east-1"
 TF_TABLE="terraform-workload-lock"
 TF_BUCKET="terraform-workload-data"
 TZ=UTC
@@ -21,6 +22,12 @@ create-policies-for-role:                       ## Create processed policies for
 			sed "s/\$${bucket_id}/$(TF_BUCKET)/g" | \
 			sed "s/\$${table_id}/$(TF_TABLE)/g" > policies/$${policy}; \
 	done
+
+create-terraform-bucket:                        ## Create terraform workload bucket
+	@echo "Creating terraform bucket to store workload data in Amazon Web Services..."
+	@aws s3api create-bucket --region $(AWS_REGION) --bucket $(TF_BUCKET) --no-object-lock-enabled-for-bucket
+	@aws s3api put-bucket-versioning --region $(AWS_REGION) --bucket $(TF_BUCKET) --versioning-configuration Status=Enabled
+	@aws s3api put-bucket-encryption --region $(AWS_REGION) --bucket $(TF_BUCKET) --server-side-encryption-configuration '{ "Rules": [ { "ApplyServerSideEncryptionByDefault": { "SSEAlgorithm": "AES256" }, "BucketKeyEnabled": true } ] }'
 
 help:                                           ## Display help screen
 	@echo "Usage:"
