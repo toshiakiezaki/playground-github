@@ -19,6 +19,7 @@ create-policies-for-role:                       ## Create processed policies for
 	@for policy in $(shell ls templates); do \
 		cat templates/$${policy} | \
 			sed "s/\$${account_id}/$(AWS_ACCOUNT)/g" | \
+			sed "s/\$${region_id}/$(AWS_REGION)/g" | \
 			sed "s/\$${bucket_id}/$(TF_BUCKET)/g" | \
 			sed "s/\$${table_id}/$(TF_TABLE)/g" > policies/$${policy}; \
 	done

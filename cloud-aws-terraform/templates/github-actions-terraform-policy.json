@@ -11,7 +11,7 @@
                 "s3:DeleteBucketPolicy"
             ],
             "Resource": [
-                "arn:aws:s3::${account_id}:${bucket_id}"
+                "arn:aws:s3:${region_id}:${account_id}:${bucket_id}"
             ]
         },
         {
@@ -21,7 +21,7 @@
                 "dynamodb:DeleteTable"
             ],
             "Resource": [
-                "arn:aws:dynamodb::${account_id}:table/${table_id}"
+                "arn:aws:dynamodb:${region_id}:${account_id}:table/${table_id}"
             ]
         },
         {
