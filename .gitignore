@@ -26,3 +26,6 @@
 
 # Project specifics
 cloud-aws-connection/policies/*
+cloud-aws-terraform/policies/*
+cloud-gcp-connection/policies/*
+cloud-gcp-terraform/policies/*
