@@ -34,6 +34,10 @@ create-terraform-bucket:                        ## Create terraform workload buc
 	@aws s3api put-bucket-versioning --region $(AWS_REGION) --bucket $(TF_BUCKET) --versioning-configuration Status=Enabled
 	@aws s3api put-bucket-encryption --region $(AWS_REGION) --bucket $(TF_BUCKET) --server-side-encryption-configuration '{ "Rules": [ { "ApplyServerSideEncryptionByDefault": { "SSEAlgorithm": "AES256" }, "BucketKeyEnabled": true } ] }'
 
+attach-terraform-policy:                        ## Attach terraform policy to GitHub Actions role
+	@echo "Attaching terraform policy to GitHub Actions role in Amazon Web Services..."
+	@aws iam attach-role-policy --role-name github-actions-role --policy-arn arn:aws:iam::$(AWS_ACCOUNT):policy/github-actions-terraform-policy
+
 help:                                           ## Display help screen
 	@echo "Usage:"
 	@echo "	 make [COMMAND]"
