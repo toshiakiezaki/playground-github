@@ -12,14 +12,14 @@ endif
 
 all: help
 
-create-identity-pool:                          ## Create workload identity pool
+create-identity-pool:                           ## Create workload identity pool
 	@echo "Creating workload identity pool in Google Cloud Platform..."
 	@gcloud iam workload-identity-pools create github-actions-pool --location="global" \
 		--display-name="GitHub Actions Pool" \
 		--description="Workload identity pool for GitHub Actions" \
 		--project $(GCP_PROJECT_ID)
 
-create-identity-pool-provider:                 ## Create workload identity pool provider with OIDC
+create-identity-pool-provider:                  ## Create workload identity pool provider with OIDC
 	@echo "Creating workload identity pool provider with OIDC in Google Cloud Platform..."
 	@gcloud iam workload-identity-pools providers create-oidc github-actions-oidc-provider \
 		--location="global" --workload-identity-pool="github-actions-pool"  \
@@ -29,7 +29,7 @@ create-identity-pool-provider:                 ## Create workload identity pool 
 		--display-name "GitHub Actions OIDC Provider"
 		--project $(GCP_PROJECT_ID)
 
-create-service-account:                        ## Create service account
+create-service-account:                         ## Create service account
 	@echo "Creating service account in Google Cloud Platform..."
 	@gcloud iam service-accounts create github-actions \
 		--display-name="GitHub Actions" \
@@ -42,7 +42,7 @@ create-service-account-policies:
 		--role="roles/iam.workloadIdentityUser" \
 		--member="principalSet://iam.googleapis.com/projects/$(GCP_PROJECT_NUMBER)/locations/global/workloadIdentityPools/github-actions-pool/attribute.repository_owner/toshiakiezaki"
 
-help:                                          ## Display help screen
+help:                                           ## Display help screen
 	@echo "Usage:"
 	@echo "	 make [COMMAND]"
 	@echo "	 make help \n"
