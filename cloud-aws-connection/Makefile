@@ -11,8 +11,8 @@ endif
 
 all: help
 
-create-policies-for-role:                       ## Create processed policies for role
-	@echo "Creating policies for OIDC connection role in Amazon Web Services..."
+process-policy-variables:                       ## Process variables in policies
+	@echo "Processing variables in policies for OIDC connection role in Amazon Web Services..."
 	@rm -rf policies
 	@mkdir -p policies
 	@for policy in $(shell ls templates); do \
