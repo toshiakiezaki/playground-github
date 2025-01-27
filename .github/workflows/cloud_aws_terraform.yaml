@@ -28,13 +28,13 @@ jobs:
         name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-session-name: playground-github
+          role-session-name: ${{ github.event.repository.name }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github-actions-role
           aws-region: ${{ env.AWS_REGION }}
       - id: terraform-init
         name: Initilize terraform by using the configuration files on current directory
         run: |
-          terraform init
+          terraform init -backend-config="key=${{ github.event.repository.name }}/${{ env.AWS_REGION }}/terraform.tfstate"
       - id: terraform-validate
         name: Validate terraform configuration files on current directory
         run: |
