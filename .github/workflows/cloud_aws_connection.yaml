@@ -14,17 +14,17 @@ jobs:
   aws:
     runs-on: ubuntu-latest
     steps:
-      - id: clone
+      - id: checkout-project
         name: Checkout project
         uses: actions/checkout@v4
-      - id: authenticate
+      - id: aws-auth
         name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-session-name: playground-github
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github-actions-role
           aws-region: ${{ env.AWS_REGION }}
-      - id: info
+      - id: aws-info
         name: Get information from AWS credentials
         run: |
           aws sts get-caller-identity
