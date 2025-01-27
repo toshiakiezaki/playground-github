@@ -1,0 +1,44 @@
+name: Execute terraform with GitHub Actions and GCP
+
+on:
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  AWS_ACCOUNT: ${{ secrets.AWS_ACCOUNT }}
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  aws:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - id: checkout-project
+        name: Checkout project
+        uses: actions/checkout@v4
+      - id: setup-terraform
+        name: Setup terraform
+        uses: hashicorp/setup-terraform@v3
+      - id: setup-workspace
+        name: Setup workspace
+        run: |
+          cd cloud-aws-terraform/terraform
+      - id: aws-auth
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-session-name: playground-github
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+      - id: terraform-init
+        name: Initilize terraform by using the configuration files on current directory
+        run: |
+          terraform init
+      - id: terraform-validate
+        name: Validate terraform configuration files on current directory
+        run: |
+          terraform validate
