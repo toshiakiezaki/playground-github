@@ -70,4 +70,4 @@ jobs:
         if: github.ref == 'refs/heads/master' && steps.terraform-plan.outputs.has-changes == 'true'
         name: Execute terraform plan based on configuration files on the current directory
         run: |
-          echo terraform apply "terraform.plan"
+          terraform apply "terraform.plan"
