@@ -57,9 +57,9 @@ jobs:
           has_changes=$?
           echo Has Changes: ${has_changes}
           if [ ${has_changes} -eq 2 ]; then
-            echo "has-changes=false" >> $GITHUB_OUTPUT
-          elif [ ${has_changes} -eq 0 ]; then
             echo "has-changes=true" >> $GITHUB_OUTPUT
+          elif [ ${has_changes} -eq 0 ]; then
+            echo "has-changes=false" >> $GITHUB_OUTPUT
           else
             exit 1
           fi
