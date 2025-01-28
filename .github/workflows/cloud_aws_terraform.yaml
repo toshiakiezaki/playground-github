@@ -53,4 +53,12 @@ jobs:
       - id: terraform-plan
         name: Create terraform execution plan based on configuration files on the current directory
         run: |
-          terraform plan -var-file="terraform.tfvars" -out="terraform.plan"
+          terraform plan -var-file="terraform.tfvars" -out="terraform.plan" -detailed-exitcode
+          has_changes=$?
+          if [ ${has_changes} -eq 2 ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          elif [ ${has_changes} -eq 0 ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            exit 1
+          fi
