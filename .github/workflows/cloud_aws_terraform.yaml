@@ -9,6 +9,7 @@ env:
   TF_TABLE: terraform-workload-lock
   TF_BUCKET: terraform-workload-data
   TF_REGION: ${{ secrets.AWS_REGION }}
+  TF_VARIABLES: ${{ secrets.TF_VARIABLES }}
 
 permissions:
   id-token: write
@@ -34,8 +35,12 @@ jobs:
           role-session-name: ${{ github.event.repository.name }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github-actions-role
           aws-region: ${{ env.AWS_REGION }}
+      - id: terraform-variables
+        name: Create terraform variables file on the current directory
+        run: |
+          echo "${{ env.TF_VARIABLES }}" > terraform.tfvars
       - id: terraform-init
-        name: Initilize terraform by using the configuration files on current directory
+        name: Initilize terraform by using the configuration files on the current directory
         run: |
           terraform init -backend-config="key=${{ github.event.repository.name }}/${{ env.AWS_REGION }}/terraform.tfstate" \
                          -backend-config="bucket=${{ env.TF_BUCKET }}" \
@@ -45,3 +50,7 @@ jobs:
         name: Validate terraform configuration files on current directory
         run: |
           terraform validate
+      - id: terraform-plan
+        name: Create terraform execution plan based on configuration files on the current directory
+        run: |
+          terraform plan -var-file="terraform.tfvars" -out="terraform.plan"
