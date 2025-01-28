@@ -1,0 +1,74 @@
+name: Terraform GitHub Actions to GCP
+
+on:
+  workflow_dispatch:
+
+env:
+  GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  GCP_PROJECT_NUMBER: ${{ secrets.GCP_PROJECT_NUMBER }}
+  TF_TABLE: terraform-workload-lock
+  TF_BUCKET: terraform-workload-data
+  TF_REGION: ${{ secrets.AWS_REGION }}
+  TF_VARIABLES: ${{ secrets.TF_VARIABLES }}
+
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  gcp:
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout-project
+        name: Checkout project
+        uses: actions/checkout@v4
+      - id: setup-terraform
+        name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - id: gcp-auth
+        name: Configure GCP credentials
+        uses: google-github-actions/auth@v2
+        with:
+          create_credentials_file: true
+          workload_identity_provider: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-oidc-provider
+          service_account: github-actions@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com
+          project_id: ${{ env.GCP_PROJECT_ID }}
+      - id: gcp-login
+        name: Login using GCP credentials
+        run: |
+          gcloud auth login --brief --cred-file="${{ steps.authenticate.outputs.credentials_file_path }}"
+      - id: terraform-variables
+        name: Create terraform variables file on the current directory
+        run: |
+          echo "${{ env.TF_VARIABLES }}" > terraform.tfvars
+      - id: terraform-init
+        name: Initilize terraform by using the configuration files on the current directory
+        run: |
+          terraform init -backend-config="key=${{ github.event.repository.name }}/${{ env.AWS_REGION }}/terraform.tfstate" \
+                         -backend-config="bucket=${{ env.TF_BUCKET }}" \
+                         -backend-config="region=${{ env.TF_REGION }}" \
+                         -backend-config="dynamodb_table=${{ env.TF_TABLE }}"
+      - id: terraform-validate
+        name: Validate terraform configuration files on current directory
+        run: |
+          terraform validate
+      - id: terraform-plan
+        name: Create terraform execution plan based on configuration files on the current directory
+        run: |
+          set +e
+          terraform plan -var-file="terraform.tfvars" -out="terraform.plan" -detailed-exitcode
+          has_changes=$?
+          if [ ${has_changes} -eq 2 ]; then
+            echo "has-changes=true" >> $GITHUB_OUTPUT
+          elif [ ${has_changes} -eq 0 ]; then
+            echo "has-changes=false" >> $GITHUB_OUTPUT
+          else
+            exit 1
+          fi
+          exit 0
+      - id: terraform-apply
+        if: github.ref == 'refs/heads/master' && steps.terraform-plan.outputs.has-changes == 'true'
+        name: Execute terraform plan based on configuration files on the current directory
+        run: |
+          terraform apply "terraform.plan"
