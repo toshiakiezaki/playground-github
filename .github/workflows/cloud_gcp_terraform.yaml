@@ -6,9 +6,9 @@ on:
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_PROJECT_NUMBER: ${{ secrets.GCP_PROJECT_NUMBER }}
-  TF_TABLE: terraform-workload-lock
+  GCP_REGION: ${{ secrets.GCP_REGION }}
   TF_BUCKET: terraform-workload-data
-  TF_REGION: ${{ secrets.AWS_REGION }}
+  TF_REGION: ${{ secrets.GCP_REGION }}
   TF_VARIABLES: ${{ secrets.TF_VARIABLES }}
 
 permissions:
@@ -45,10 +45,8 @@ jobs:
       - id: terraform-init
         name: Initilize terraform by using the configuration files on the current directory
         run: |
-          terraform init -backend-config="key=${{ github.event.repository.name }}/${{ env.AWS_REGION }}/terraform.tfstate" \
-                         -backend-config="bucket=${{ env.TF_BUCKET }}" \
-                         -backend-config="region=${{ env.TF_REGION }}" \
-                         -backend-config="dynamodb_table=${{ env.TF_TABLE }}"
+          terraform init -backend-config="prefix=${{ github.event.repository.name }}/${{ env.GCP_REGION }}/terraform.tfstate" \
+                         -backend-config="bucket=${{ env.TF_BUCKET }}"
       - id: terraform-validate
         name: Validate terraform configuration files on current directory
         run: |
