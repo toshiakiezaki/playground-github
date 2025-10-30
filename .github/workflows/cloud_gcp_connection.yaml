@@ -28,7 +28,7 @@ jobs:
       - id: gcp-login
         name: Login using GCP credentials
         run: |
-          gcloud auth login --brief --no-launch-browser --cred-file="${{ steps.authenticate.outputs.credentials_file_path }}"
+          gcloud auth login --brief --no-launch-browser --cred-file="${{ steps.gcp-auth.outputs.credentials_file_path }}"
       - id: gcp-info
         name: Get information from GCP credentials
         run: |
