@@ -37,7 +37,7 @@ jobs:
       - id: gcp-login
         name: Login using GCP credentials
         run: |
-          gcloud auth login --brief --cred-file="${{ steps.authenticate.outputs.credentials_file_path }}"
+          gcloud auth login --brief --no-launch-browser --cred-file="${{ steps.authenticate.outputs.credentials_file_path }}"
       - id: terraform-variables
         name: Create terraform variables file on the current directory
         run: |
