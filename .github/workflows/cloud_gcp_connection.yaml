@@ -14,10 +14,10 @@ jobs:
   gcp:
     runs-on: ubuntu-latest
     steps:
-      - id: checkout-project
+      - id: checkout_project
         name: Checkout project
         uses: actions/checkout@v4
-      - id: gcp-auth
+      - id: gcp_auth
         name: Configure GCP credentials
         uses: google-github-actions/auth@v2
         with:
@@ -25,11 +25,11 @@ jobs:
           workload_identity_provider: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-oidc-provider
           service_account: github-actions@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com
           project_id: ${{ env.GCP_PROJECT_ID }}
-      - id: gcp-login
+      - id: gcp_login
         name: Login using GCP credentials
         run: |
-          gcloud auth login --brief --no-launch-browser --cred-file="${{ steps.gcp-auth.outputs.credentials_file_path }}"
-      - id: gcp-info
+          gcloud auth login --brief --no-launch-browser --cred-file="${{ steps.gcp_auth.outputs.credentials_file_path }}"
+      - id: gcp_info
         name: Get information from GCP credentials
         run: |
           gcloud info

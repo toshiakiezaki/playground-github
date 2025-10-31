@@ -22,37 +22,37 @@ jobs:
         shell: bash
         working-directory: cloud-aws-terraform/terraform
     steps:
-      - id: checkout-project
+      - id: checkout_project
         name: Checkout project
         uses: actions/checkout@v4
-      - id: setup-terraform
+      - id: setup_terraform
         name: Setup terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_wrapper: false
-      - id: aws-auth
+      - id: aws_auth
         name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-session-name: ${{ github.event.repository.name }}
           role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT }}:role/github-actions-role
           aws-region: ${{ env.AWS_REGION }}
-      - id: terraform-variables
+      - id: terraform_variables
         name: Create terraform variables file on the current directory
         run: |
           echo "${{ env.TF_VARIABLES }}" > terraform.tfvars
-      - id: terraform-init
+      - id: terraform_init
         name: Initilize terraform by using the configuration files on the current directory
         run: |
           terraform init -backend-config="key=${{ github.event.repository.name }}/${{ env.AWS_REGION }}/terraform.tfstate" \
                          -backend-config="bucket=${{ env.TF_BUCKET }}" \
                          -backend-config="region=${{ env.TF_REGION }}" \
                          -backend-config="dynamodb_table=${{ env.TF_TABLE }}"
-      - id: terraform-validate
+      - id: terraform_validate
         name: Validate terraform configuration files on current directory
         run: |
           terraform validate
-      - id: terraform-plan
+      - id: terraform_plan
         name: Create terraform execution plan based on configuration files on the current directory
         run: |
           set +e
@@ -66,7 +66,7 @@ jobs:
             exit 1
           fi
           exit 0
-      - id: terraform-apply
+      - id: terraform_apply
         if: github.ref == 'refs/heads/master' && steps.terraform-plan.outputs.has-changes == 'true'
         name: Execute terraform plan based on configuration files on the current directory
         run: |

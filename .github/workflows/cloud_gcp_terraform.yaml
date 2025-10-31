@@ -18,15 +18,15 @@ jobs:
   gcp:
     runs-on: ubuntu-latest
     steps:
-      - id: checkout-project
+      - id: checkout_project
         name: Checkout project
         uses: actions/checkout@v4
-      - id: setup-terraform
+      - id: setup_terraform
         name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_wrapper: false
-      - id: gcp-auth
+      - id: gcp_auth
         name: Configure GCP credentials
         uses: google-github-actions/auth@v2
         with:
@@ -34,24 +34,24 @@ jobs:
           workload_identity_provider: projects/${{ env.GCP_PROJECT_NUMBER }}/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-oidc-provider
           service_account: github-actions@${{ env.GCP_PROJECT_ID }}.iam.gserviceaccount.com
           project_id: ${{ env.GCP_PROJECT_ID }}
-      - id: gcp-login
+      - id: gcp_login
         name: Login using GCP credentials
         run: |
-          gcloud auth login --brief --no-launch-browser --cred-file="${{ steps.gcp-auth.outputs.credentials_file_path }}"
-      - id: terraform-variables
+          gcloud auth login --brief --no-launch-browser --cred-file="${{ steps.gcp_auth.outputs.credentials_file_path }}"
+      - id: terraform_variables
         name: Create terraform variables file on the current directory
         run: |
           echo "${{ env.TF_VARIABLES }}" > terraform.tfvars
-      - id: terraform-init
+      - id: terraform_init
         name: Initilize terraform by using the configuration files on the current directory
         run: |
           terraform init -backend-config="prefix=${{ github.event.repository.name }}/${{ env.GCP_REGION }}/terraform.tfstate" \
                          -backend-config="bucket=${{ env.TF_BUCKET }}"
-      - id: terraform-validate
+      - id: terraform_validate
         name: Validate terraform configuration files on current directory
         run: |
           terraform validate
-      - id: terraform-plan
+      - id: terraform_plan
         name: Create terraform execution plan based on configuration files on the current directory
         run: |
           set +e
@@ -65,7 +65,7 @@ jobs:
             exit 1
           fi
           exit 0
-      - id: terraform-apply
+      - id: terraform_apply
         if: github.ref == 'refs/heads/master' && steps.terraform-plan.outputs.has-changes == 'true'
         name: Execute terraform plan based on configuration files on the current directory
         run: |
